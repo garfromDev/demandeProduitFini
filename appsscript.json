@@ -1,0 +1,15 @@
+{
+  "timeZone": "America/New_York",
+  "dependencies": {
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "sheets": {
+    "macros": [{
+      "menuName": "NouvelleDemande",
+      "functionName": "NouvelleDemande1"
+    }, {
+      "menuName": "Macro sans titre",
+      "functionName": "Macrosanstitre"
+    }]
+  }
+}
