@@ -119,9 +119,8 @@ function copyProtectiontoSheet(protection, targetSheet){
   var newProtection= targetSheet.protect()
     .setDescription(targetSheet.getSheetName())
     .setUnprotectedRanges(targetUr);
-  // allowed editors are those from original protection    
-   return  newProtection.removeEditors(newProtection.getEditors())
-    .addEditors(protection.getEditors());
+  // allowed editors are those from original protection
+   return  newProtection.removeEditors(newProtection.getEditors());
 }
 
 

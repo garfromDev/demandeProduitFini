@@ -40,3 +40,12 @@ function urlFeuille() {
   urlFeuille = spreadsheet.getFormUrl();
 
 } 
+
+
+/** Custom function  
+* utilisation : `= NOM_FEUILLE()`
+* @return {String} Le nom de la feuille courante
+*/
+function NOM_FEUILLE() {
+  return activeSheet().getName();
+}
