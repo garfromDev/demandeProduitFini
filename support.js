@@ -84,6 +84,75 @@ function setProtection(originalProtection, ranges) {
 }
 
 
+/**
+* Copy the sheet protection from one sheet to another one
+* @param {Sheet} fromSheet
+* @param {Sheet} toSheet
+* @return {Protection} : the protection object of the new sheet, null if fromSheet was not protected
+* NOTE : only the first sheet protection is copied, including unprotected ranges
+* CAUTION : no check done, may throw if sheets do not exist or function executed with unsuficient privilege
+*/
+function copyProtectionFromSheetToSheet(fromSheet, toSheet){
+  var protections = fromSheet.getProtections(SpreadsheetApp.ProtectionType.SHEET);
+  if(protections.length<1){return null;}
+  return copyProtectiontoSheet(protections[0],
+                        toSheet);
+}
+
+
+/**
+* Copy the given protection to another sheet
+* @param {Protection} protection
+* @param {Sheet} targetSheet
+* @return {Protection} : the protection object of the new sheet
+* NOTE : the protection is copied, including unprotected ranges
+* CAUTION : no check done, may throw if sheets do not exist or function executed with unsuficient privilege
+*/
+function copyProtectiontoSheet(protection, targetSheet){
+  var ur = protection.getUnprotectedRanges();
+  // convert range into same range in new sheet
+  var targetUr=[];
+  for(i=0;i<ur.length;i++){
+    targetUr.push(targetSheet.getRange(ur[i].getA1Notation()));
+  }
+  // set description to sheet name and copy unprotected ranges
+  var newProtection= targetSheet.protect()
+    .setDescription(targetSheet.getSheetName())
+    .setUnprotectedRanges(targetUr);
+  // allowed editors are those from original protection    
+   return  newProtection.removeEditors(newProtection.getEditors())
+    .addEditors(protection.getEditors());
+}
+
+
+
+/**
+* force a sheet to refresh (when using query, Index(), custom function
+* @param {Spreadsheet} the spreadsheet to whic the sheet belongs
+* @param {Sheet} the sheet to refresh
+* @return 
+* NOTE : max 10 attempt done if legitimate #N/A in cell
+* CAUTION : no check done, may throw if sheets do not exist or function executed with unsuficient privilege
+*/
+function refreshSheet(spreadsheet, sheet) {
+  var dataArrayRange = sheet.getRange(1,1,sheet.getLastRow(),sheet.getLastColumn());
+  var dataArray = dataArrayRange.getValues(); // necessary to refresh custom functions
+  var nanFound = true;
+  var cpt = 10;
+  while(nanFound && cpt > 0) {
+    for(var i = 0; i < dataArray.length; i++) {
+      if(dataArray[i].indexOf('#N/A') >= 0) {
+        nanFound = true;
+        dataArray = dataArrayRange.getValues();
+        cpt--; // to avoid looping when formula result in #N/A legitimely
+        break;
+      } // end if
+      else if(i == dataArray.length - 1) nanFound = false;
+    } // end for
+  } // end while
+}
+
+
 /** return the sheet in this spreadsheet with given name (null if doesn't exist)
 * @param {String} name
 * @return {Sheet}
@@ -140,7 +209,7 @@ function addHyperlinkToCell(cell, link){
   cell.setFormula( 
     getHyperlinkFormulaToWithDisplay(
       link, cell.getValue())
-    );
+    ).setShowHyperlink(true);
 }
 
 
