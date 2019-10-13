@@ -25,6 +25,15 @@ function toast(msg, time){
 }
 
 
+
+/** return the active sheet of the active spreadsheet
+* @return {Sheet}
+*/
+function activeSheet(){
+  return SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+}
+
+
 /**
 * remove the protection of existing range of the sheet
 * @param {Sheet} sheet
@@ -112,3 +121,34 @@ function createArray(nbL, nbC) {
   }
   return arr;
 }
+
+
+
+// make the string for a formula that create an hyperlink to link
+// displaying "display" in the cell
+function getHyperlinkFormulaToWithDisplay(link, display){
+  return  '=HYPERLINK("'+link+'"; "'+display+'")'; 
+ }
+ 
+ 
+/** add an hyperlink to link to the cell
+* it will display the current cell content
+* @param {Cell} cell
+* @param {String} link
+*/
+function addHyperlinkToCell(cell, link){
+  cell.setFormula( 
+    getHyperlinkFormulaToWithDisplay(
+      link, cell.getValue())
+    );
+}
+
+
+/** return the URL of a given sheet in this spreadsheet (for direct access, without opening a new tab)
+* @param {Sheet} sheet
+* @return {String}
+*/
+function getLinkToSheet(sheet){
+  return "#gid="+sheet.getSheetId();
+}
+
