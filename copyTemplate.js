@@ -12,3 +12,13 @@ function createNewDemand() {
     // 3 insérer l'hyperlien
     addHyperlinkToCell(sh.getRange(ligne, COL_NOM),getLinkToSheet(newSheet));
 }
+
+function removeOtherProtection() {
+    var shts = SpreadsheetApp.getActiveSpreadsheet().getSheets();
+    for(i=0; i < shts.length; i++) {
+      var prot = shts[i].getProtections(SpreadsheetApp.ProtectionType.SHEET)[0];
+      if(prot) {
+        prot.removeEditors(prot.getEditors());
+      }
+    }
+}
